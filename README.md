@@ -21,7 +21,7 @@ Design invoices and receipts and share them on the go — all from one sleek and
 
 ## Tech Stack
 
-This project is built with .
+This project is built with
 
 - Vite
 - React
@@ -30,11 +30,11 @@ This project is built with .
 
 ## Screenshots
 
-![Screenshot3](https://i.ibb.co/Rkc1tdTH/Invo-Swift-Screenshot-3.png)
+![Screenshot3](https://raw.githubusercontent.com/RainboeStrykr/invoswift/refs/heads/main/media/InvoSwift-Screenshot(3).png)
 
-![Screenshot2](https://i.ibb.co/sdFzg0JB/Invo-Swift-Screenshot-2.png)
+![Screenshot2](https://raw.githubusercontent.com/RainboeStrykr/invoswift/refs/heads/main/media/InvoSwift-Screenshot(2).png)
 
-![Screenshot1](https://i.ibb.co/qLPyT54y/Invo-Swift-Screenshot-1.png)
+![Screenshot1](https://raw.githubusercontent.com/RainboeStrykr/invoswift/refs/heads/main/media/InvoSwift-Screenshot(1).png)
 
 
 
