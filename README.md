@@ -1,5 +1,7 @@
 # 🧾 InvoSwift – Swift. Simple. Seamless Billing
 
+![screenshot](https://raw.githubusercontent.com/RainboeStrykr/invoswift/refs/heads/main/media/MEDIA.png)
+
 ## 📱 About
 InvoSwift is your smart, fast, and hassle-free solution for creating professional invoices and receipts. Whether you're a freelancer, small business owner, or entrepreneur, InvoSwift helps you stay on top of your finances with just a few taps.
 
