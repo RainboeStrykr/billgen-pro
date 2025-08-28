@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'InvoSwift - Java'">InvoSwift - Java</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+        .floating-label {
+            position: relative;
+        }
+        .floating-label input {
+            padding-top: 1.625rem;
+            padding-bottom: 0.625rem;
+        }
+        .floating-label label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 1rem 0.75rem;
+            pointer-events: none;
+            border: 1px solid transparent;
+            transform-origin: 0 0;
+            transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .floating-label input:focus ~ label,
+        .floating-label input:not(:placeholder-shown) ~ label {
+            opacity: 0.65;
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-receipt me-2"></i>InvoSwift Java
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/invoices">Invoices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/receipts">Receipts</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/invoices/new">
+                            <i class="fas fa-plus me-1"></i>New Invoice
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/receipts/new">
+                            <i class="fas fa-plus me-1"></i>New Receipt
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+        <div th:replace="${content}"></div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-calculate totals
+        function calculateItemTotal(row) {
+            const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+            const amount = parseFloat(row.querySelector('.amount').value) || 0;
+            const total = quantity * amount;
+            row.querySelector('.total').value = total.toFixed(2);
+            calculateGrandTotal();
+        }
+
+        function calculateGrandTotal() {
+            const totals = document.querySelectorAll('.total');
+            let subTotal = 0;
+            totals.forEach(total => {
+                subTotal += parseFloat(total.value) || 0;
+            });
+            
+            const taxPercentage = parseFloat(document.getElementById('taxPercentage')?.value) || 0;
+            const taxAmount = (subTotal * taxPercentage) / 100;
+            const grandTotal = subTotal + taxAmount;
+            
+            if (document.getElementById('subTotal')) {
+                document.getElementById('subTotal').textContent = '₹' + subTotal.toFixed(2);
+            }
+            if (document.getElementById('taxAmount')) {
+                document.getElementById('taxAmount').textContent = '₹' + taxAmount.toFixed(2);
+            }
+            if (document.getElementById('grandTotal')) {
+                document.getElementById('grandTotal').textContent = '₹' + grandTotal.toFixed(2);
+            }
+        }
+
+        // Add event listeners when document loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add listeners to existing quantity and amount inputs
+            document.querySelectorAll('.quantity, .amount').forEach(input => {
+                input.addEventListener('input', function() {
+                    calculateItemTotal(this.closest('.item-row'));
+                });
+            });
+
+            // Add listener to tax percentage
+            const taxInput = document.getElementById('taxPercentage');
+            if (taxInput) {
+                taxInput.addEventListener('input', calculateGrandTotal);
+            }
+
+            // Remove item functionality
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-item')) {
+                    e.target.closest('.item-row').remove();
+                    calculateGrandTotal();
+                }
+            });
+
+            // Initial calculation
+            calculateGrandTotal();
+        });
+    </script>
+</body>
+</html>
