@@ -1,10 +1,10 @@
-# 🧾 InvoSwift Java - Swift. Simple. Seamless Billing
+# 🧾 Billgen Pro - Professional Billing Made Simple
 
-A Java Spring Boot version of the popular InvoSwift invoice and receipt generator application.
+A powerful Java Spring Boot invoice and receipt generator application for professional billing needs.
 
 ## 📱 About
 
-InvoSwift Java is a server-side implementation of the InvoSwift billing application, built with Spring Boot and Thymeleaf. It provides the same core functionality as the original React version but with a traditional web application architecture.
+Billgen Pro is a comprehensive server-side billing application built with Spring Boot and Thymeleaf. It provides professional invoice and receipt generation with modern web application architecture and robust data persistence.
 
 ## ⚡️ Key Features
 
@@ -38,7 +38,7 @@ InvoSwift Java is a server-side implementation of the InvoSwift billing applicat
 1. **Clone the repository:**
    ```bash
    git clone <repository-url>
-   cd invoswift-java
+   cd billgen-pro
    ```
 
 2. **Build the application:**
@@ -54,7 +54,7 @@ InvoSwift Java is a server-side implementation of the InvoSwift billing applicat
 4. **Access the application:**
    - Main application: http://localhost:8080
    - H2 Database console: http://localhost:8080/h2-console
-     - JDBC URL: `jdbc:h2:mem:invoswift`
+     - JDBC URL: `jdbc:h2:mem:billgenpro`
      - Username: `sa`
      - Password: (leave empty)
 
@@ -88,8 +88,8 @@ InvoSwift Java is a server-side implementation of the InvoSwift billing applicat
 ```
 src/
 ├── main/
-│   ├── java/com/invoswift/
-│   │   ├── InvoSwiftApplication.java     # Main application class
+│   ├── java/com/billgenpro/
+│   │   ├── BillgenProApplication.java    # Main application class
 │   │   ├── controller/                   # Web controllers
 │   │   │   ├── HomeController.java
 │   │   │   ├── InvoiceController.java
@@ -125,7 +125,7 @@ The application uses H2 in-memory database by default. To use a persistent datab
 
 ```properties
 # Example for MySQL
-spring.datasource.url=jdbc:mysql://localhost:3306/invoswift
+spring.datasource.url=jdbc:mysql://localhost:3306/billgenpro
 spring.datasource.username=your_username
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
@@ -152,18 +152,18 @@ spring.jpa.hibernate.ddl-auto=update
 - `GET /receipts/{id}/pdf` - Download receipt PDF
 - `GET /receipts/{id}/delete` - Delete receipt
 
-## 🎨 Features Comparison with React Version
+## 🎨 Core Features
 
-| Feature | React Version | Java Version |
-|---------|---------------|--------------|
-| Invoice Generation | ✅ | ✅ |
-| Receipt Generation | ✅ | ✅ |
-| PDF Export | ✅ | ✅ |
-| Multiple Templates | ✅ | ✅ (Basic) |
-| Data Persistence | LocalStorage | Database |
-| Real-time Calculations | ✅ | ✅ |
-| Responsive Design | ✅ | ✅ |
-| Template Gallery | ✅ | ❌ (Simplified) |
+| Feature | Status |
+|---------|--------|
+| Invoice Generation | ✅ |
+| Receipt Generation | ✅ |
+| PDF Export | ✅ |
+| Multiple Templates | ✅ |
+| Database Persistence | ✅ |
+| Real-time Calculations | ✅ |
+| Responsive Design | ✅ |
+| Professional UI | ✅ |
 
 ## 🤝 Contributing
 
@@ -175,7 +175,7 @@ spring.jpa.hibernate.ddl-auto=update
 
 ## 📝 License
 
-This project is a Java implementation of InvoSwift and follows the same licensing terms as the original project.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🔮 Future Enhancements
 

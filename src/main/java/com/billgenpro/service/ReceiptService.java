@@ -1,15 +1,16 @@
-package com.invoswift.service;
-
-import com.invoswift.model.Receipt;
-import com.invoswift.model.ReceiptItem;
-import com.invoswift.repository.ReceiptRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+package com.billgenpro.service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.billgenpro.model.Receipt;
+import com.billgenpro.model.ReceiptItem;
+import com.billgenpro.repository.ReceiptRepository;
 
 @Service
 @Transactional

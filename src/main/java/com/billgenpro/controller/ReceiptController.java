@@ -1,10 +1,10 @@
-package com.invoswift.controller;
+package com.billgenpro.controller;
 
-import com.invoswift.model.Receipt;
-import com.invoswift.model.ReceiptItem;
-import com.invoswift.model.Company;
-import com.invoswift.service.ReceiptService;
-import com.invoswift.service.PdfService;
+import com.billgenpro.model.Receipt;
+import com.billgenpro.model.ReceiptItem;
+import com.billgenpro.model.Company;
+import com.billgenpro.service.ReceiptService;
+import com.billgenpro.service.PdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

@@ -12,11 +12,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.invoswift</groupId>
-    <artifactId>invoswift-java</artifactId>
+    <groupId>com.billgenpro</groupId>
+    <artifactId>billgen-pro</artifactId>
     <version>1.0.0</version>
-    <name>InvoSwift Java</name>
-    <description>Java version of InvoSwift - Invoice and Receipt Generator</description>
+    <name>Billgen Pro</name>
+    <description>Professional Invoice and Receipt Generator</description>
 
     <properties>
         <java.version>17</java.version>

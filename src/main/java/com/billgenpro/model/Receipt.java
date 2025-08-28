@@ -1,4 +1,4 @@
-package com.invoswift.model;
+package com.billgenpro.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -9,17 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "invoices")
-public class Invoice {
+@Table(name = "receipts")
+public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Invoice number is required")
+    @NotBlank(message = "Receipt number is required")
     private String number;
 
     private LocalDate date;
-    private LocalDate paymentDate;
 
     @Embedded
     @AttributeOverrides({
@@ -30,24 +29,11 @@ public class Invoice {
     })
     private Company company;
 
-    @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "bill_to_name")),
-        @AttributeOverride(name = "address", column = @Column(name = "bill_to_address")),
-        @AttributeOverride(name = "phone", column = @Column(name = "bill_to_phone"))
-    })
-    private BillTo billTo;
+    private String billTo;
+    private String cashier;
 
-    @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "name", column = @Column(name = "ship_to_name")),
-        @AttributeOverride(name = "address", column = @Column(name = "ship_to_address")),
-        @AttributeOverride(name = "phone", column = @Column(name = "ship_to_phone"))
-    })
-    private BillTo shipTo;
-
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<InvoiceItem> items = new ArrayList<>();
+    @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ReceiptItem> items = new ArrayList<>();
 
     @PositiveOrZero(message = "Tax percentage must be positive")
     private BigDecimal taxPercentage = BigDecimal.ZERO;
@@ -55,15 +41,18 @@ public class Invoice {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(columnDefinition = "TEXT")
+    private String footer;
+
     private Integer templateNumber = 1;
 
     // Constructors
-    public Invoice() {}
+    public Receipt() {}
 
     // Calculated fields
     public BigDecimal getSubTotal() {
         return items.stream()
-                .map(InvoiceItem::getTotal)
+                .map(ReceiptItem::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -86,24 +75,20 @@ public class Invoice {
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
 
-    public LocalDate getPaymentDate() { return paymentDate; }
-    public void setPaymentDate(LocalDate paymentDate) { this.paymentDate = paymentDate; }
-
     public Company getCompany() { return company; }
     public void setCompany(Company company) { this.company = company; }
 
-    public BillTo getBillTo() { return billTo; }
-    public void setBillTo(BillTo billTo) { this.billTo = billTo; }
+    public String getBillTo() { return billTo; }
+    public void setBillTo(String billTo) { this.billTo = billTo; }
 
-    public BillTo getShipTo() { return shipTo; }
-    public void setShipTo(BillTo shipTo) { this.shipTo = shipTo; }
+    public String getCashier() { return cashier; }
+    public void setCashier(String cashier) { this.cashier = cashier; }
 
-    public List<InvoiceItem> getItems() { return items; }
-    public void setItems(List<InvoiceItem> items) { 
+    public List<ReceiptItem> getItems() { return items; }
+    public void setItems(List<ReceiptItem> items) { 
         this.items = items;
-        // Set the invoice reference for each item
         if (items != null) {
-            items.forEach(item -> item.setInvoice(this));
+            items.forEach(item -> item.setReceipt(this));
         }
     }
 
@@ -112,6 +97,9 @@ public class Invoice {
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+
+    public String getFooter() { return footer; }
+    public void setFooter(String footer) { this.footer = footer; }
 
     public Integer getTemplateNumber() { return templateNumber; }
     public void setTemplateNumber(Integer templateNumber) { this.templateNumber = templateNumber; }

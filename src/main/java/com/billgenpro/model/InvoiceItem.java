@@ -1,13 +1,21 @@
-package com.invoswift.model;
+package com.billgenpro.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
+
 @Entity
-@Table(name = "receipt_items")
-public class ReceiptItem {
+@Table(name = "invoice_items")
+public class InvoiceItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,13 +32,13 @@ public class ReceiptItem {
     private BigDecimal amount = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receipt_id")
-    private Receipt receipt;
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
 
     // Constructors
-    public ReceiptItem() {}
+    public InvoiceItem() {}
 
-    public ReceiptItem(String name, String description, Integer quantity, BigDecimal amount) {
+    public InvoiceItem(String name, String description, Integer quantity, BigDecimal amount) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -61,6 +69,6 @@ public class ReceiptItem {
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public Receipt getReceipt() { return receipt; }
-    public void setReceipt(Receipt receipt) { this.receipt = receipt; }
+    public Invoice getInvoice() { return invoice; }
+    public void setInvoice(Invoice invoice) { this.invoice = invoice; }
 }

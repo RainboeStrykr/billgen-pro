@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Invoice ' + ${invoice.number} + ' - Billgen Pro'">Invoice View - Billgen Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .invoice-header {
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .company-info {
+            background-color: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .container { max-width: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary no-print">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-receipt me-2"></i>Billgen Pro
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link active" href="/invoices">Invoices</a>
+                <a class="nav-link" href="/receipts">Receipts</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+            <h1><i class="fas fa-file-invoice me-2"></i>Invoice Details</h1>
+            <div class="btn-group">
+                <a th:href="@{/invoices/{id}/edit(id=${invoice.id})}" class="btn btn-secondary">
+                    <i class="fas fa-edit me-2"></i>Edit
+                </a>
+                <a th:href="@{/invoices/{id}/pdf(id=${invoice.id})}" class="btn btn-success">
+                    <i class="fas fa-download me-2"></i>Download PDF
+                </a>
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
+                <a href="/invoices" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <!-- Invoice Header -->
+                <div class="invoice-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="text-primary mb-0">INVOICE</h2>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <h4 th:text="'#' + ${invoice.number}">Invoice Number</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company and Invoice Info -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="company-info">
+                            <h5 class="text-primary mb-3">From:</h5>
+                            <div th:if="${invoice.company}">
+                                <h6 th:text="${invoice.company.name}">Company Name</h6>
+                                <p th:if="${invoice.company.address}" th:text="${invoice.company.address}" class="mb-1">Address</p>
+                                <p th:if="${invoice.company.phone}" class="mb-1">Phone: <span th:text="${invoice.company.phone}">Phone</span></p>
+                                <p th:if="${invoice.company.gst}" class="mb-0">GST: <span th:text="${invoice.company.gst}">GST</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Invoice Date:</strong></td>
+                                <td th:text="${#temporals.format(invoice.date, 'dd/MM/yyyy')}">Date</td>
+                            </tr>
+                            <tr th:if="${invoice.paymentDate}">
+                                <td><strong>Payment Date:</strong></td>
+                                <td th:text="${#temporals.format(invoice.paymentDate, 'dd/MM/yyyy')}">Payment Date</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bill To and Ship To -->
+                <div class="row mb-4">
+                    <div class="col-md-6" th:if="${invoice.billTo}">
+                        <h6 class="text-primary">Bill To:</h6>
+                        <div th:if="${invoice.billTo.name}" th:text="${invoice.billTo.name}">Customer Name</div>
+                        <div th:if="${invoice.billTo.address}" th:text="${invoice.billTo.address}">Address</div>
+                        <div th:if="${invoice.billTo.phone}">Phone: <span th:text="${invoice.billTo.phone}">Phone</span></div>
+                    </div>
+                    <div class="col-md-6" th:if="${invoice.shipTo and invoice.shipTo.name}">
+                        <h6 class="text-primary">Ship To:</h6>
+                        <div th:text="${invoice.shipTo.name}">Ship To Name</div>
+                        <div th:if="${invoice.shipTo.address}" th:text="${invoice.shipTo.address}">Address</div>
+                        <div th:if="${invoice.shipTo.phone}">Phone: <span th:text="${invoice.shipTo.phone}">Phone</span></div>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Rate</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${invoice.items}">
+                                <td>
+                                    <strong th:text="${item.name}">Item Name</strong>
+                                    <div th:if="${item.description}" class="text-muted small" th:text="${item.description}">Description</div>
+                                </td>
+                                <td class="text-center" th:text="${item.quantity}">1</td>
+                                <td class="text-end" th:text="'₹' + ${item.amount}">₹100.00</td>
+                                <td class="text-end" th:text="'₹' + ${item.total}">₹100.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totals -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div th:if="${invoice.notes}" class="mt-3">
+                            <h6 class="text-primary">Notes:</h6>
+                            <p th:text="${invoice.notes}">Notes content</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td class="text-end"><strong>Sub Total:</strong></td>
+                                <td class="text-end" th:text="'₹' + ${invoice.subTotal}">₹0.00</td>
+                            </tr>
+                            <tr>
+                                <td class="text-end">Tax (<span th:text="${invoice.taxPercentage}">0</span>%):</td>
+                                <td class="text-end" th:text="'₹' + ${invoice.taxAmount}">₹0.00</td>
+                            </tr>
+                            <tr class="table-primary">
+                                <td class="text-end"><strong>Grand Total:</strong></td>
+                                <td class="text-end"><strong th:text="'₹' + ${invoice.grandTotal}">₹0.00</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

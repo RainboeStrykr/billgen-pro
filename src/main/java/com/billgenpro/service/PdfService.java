@@ -1,22 +1,22 @@
-package com.invoswift.service;
+package com.billgenpro.service;
 
-import com.invoswift.model.Invoice;
-import com.invoswift.model.InvoiceItem;
-import com.invoswift.model.Receipt;
-import com.invoswift.model.ReceiptItem;
+import java.io.ByteArrayOutputStream;
+import java.time.format.DateTimeFormatter;
+
+import org.springframework.stereotype.Service;
+
+import com.billgenpro.model.Invoice;
+import com.billgenpro.model.InvoiceItem;
+import com.billgenpro.model.Receipt;
+import com.billgenpro.model.ReceiptItem;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import org.springframework.stereotype.Service;
-
-import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class PdfService {

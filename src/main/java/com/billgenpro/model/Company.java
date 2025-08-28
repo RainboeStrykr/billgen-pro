@@ -1,20 +1,25 @@
-package com.invoswift.model;
+package com.billgenpro.model;
 
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
 
 @Embeddable
-public class BillTo {
+public class Company {
+    @NotBlank(message = "Company name is required")
     private String name;
+    
     private String address;
     private String phone;
+    private String gst;
 
     // Constructors
-    public BillTo() {}
+    public Company() {}
 
-    public BillTo(String name, String address, String phone) {
+    public Company(String name, String address, String phone, String gst) {
         this.name = name;
         this.address = address;
         this.phone = phone;
+        this.gst = gst;
     }
 
     // Getters and Setters
@@ -26,4 +31,7 @@ public class BillTo {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+
+    public String getGst() { return gst; }
+    public void setGst(String gst) { this.gst = gst; }
 }
