@@ -22,7 +22,7 @@ Billgen Pro is a comprehensive server-side billing application built with Spring
 - **Database:** H2 (in-memory for development)
 - **Template Engine:** Thymeleaf
 - **PDF Generation:** iText 7
-- **Frontend:** Bootstrap 5, HTML5, JavaScript
+- **Frontend:** HTML5, CSS
 - **Build Tool:** Maven
 - **Java Version:** 17+
 
