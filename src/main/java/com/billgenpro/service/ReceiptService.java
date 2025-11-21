@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.billgenpro.model.Receipt;
 import com.billgenpro.model.ReceiptItem;
+import com.billgenpro.model.User;
 import com.billgenpro.repository.ReceiptRepository;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 @Transactional
@@ -23,26 +26,71 @@ public class ReceiptService {
         return receiptRepository.findAllOrderByDateDesc();
     }
 
+    public List<Receipt> getAllReceiptsByUser(User user) {
+        return receiptRepository.findByUserOrderByDateDesc(user);
+    }
+
     public Optional<Receipt> getReceiptById(Long id) {
         return receiptRepository.findById(id);
     }
 
-    public Receipt saveReceipt(Receipt receipt) {
-        // Set receipt reference for all items
-        if (receipt.getItems() != null) {
-            for (ReceiptItem item : receipt.getItems()) {
-                item.setReceipt(receipt);
-            }
-        }
-        return receiptRepository.save(receipt);
+    public Optional<Receipt> getReceiptByIdAndUser(Long id, User user) {
+        return receiptRepository.findByIdAndUserWithItems(id, user);
     }
 
-    public void deleteReceipt(Long id) {
-        receiptRepository.deleteById(id);
+    public Receipt saveReceipt(Receipt receipt, User user) {
+        // Associate receipt with user
+        receipt.setUser(user);
+        
+        // If updating an existing receipt, load it first to properly manage items
+        if (receipt.getId() != null) {
+            Receipt existingReceipt = receiptRepository.findByIdAndUserWithItems(receipt.getId(), user)
+                    .orElseThrow(() -> new RuntimeException("Receipt not found or you don't have permission to access it"));
+            // Clear existing items - orphanRemoval will handle deletion
+            existingReceipt.getItems().clear();
+            // Set receipt reference for all new items
+            if (receipt.getItems() != null) {
+                for (ReceiptItem item : receipt.getItems()) {
+                    item.setReceipt(existingReceipt);
+                    existingReceipt.getItems().add(item);
+                }
+            }
+            // Copy other fields
+            existingReceipt.setNumber(receipt.getNumber());
+            existingReceipt.setDate(receipt.getDate());
+            existingReceipt.setCompany(receipt.getCompany());
+            existingReceipt.setBillTo(receipt.getBillTo());
+            existingReceipt.setCashier(receipt.getCashier());
+            existingReceipt.setTaxPercentage(receipt.getTaxPercentage());
+            existingReceipt.setNotes(receipt.getNotes());
+            existingReceipt.setFooter(receipt.getFooter());
+            existingReceipt.setTemplateNumber(receipt.getTemplateNumber());
+            // Ensure user is set (security check)
+            existingReceipt.setUser(user);
+            return receiptRepository.save(existingReceipt);
+        } else {
+            // New receipt - just set receipt reference for all items
+            if (receipt.getItems() != null) {
+                for (ReceiptItem item : receipt.getItems()) {
+                    item.setReceipt(receipt);
+                }
+            }
+            return receiptRepository.save(receipt);
+        }
+    }
+
+    public void deleteReceipt(Long id, User user) {
+        Receipt receipt = receiptRepository.findByIdAndUserWithItems(id, user)
+                .orElseThrow(() -> new RuntimeException("Receipt not found or you don't have permission to delete it"));
+        receiptRepository.delete(receipt);
     }
 
     public List<Receipt> searchReceipts(String query) {
         return receiptRepository.findByNumberContainingIgnoreCase(query);
+    }
+
+    public List<Receipt> searchReceiptsByUser(String query, User user) {
+        return receiptRepository.findByUserAndNumberContainingIgnoreCase(user, query);
     }
 
     public String generateReceiptNumber() {
@@ -50,6 +98,14 @@ public class ReceiptService {
         do {
             number = generateRandomReceiptNumber();
         } while (receiptRepository.existsByNumber(number));
+        return number;
+    }
+
+    public String generateReceiptNumber(User user) {
+        String number;
+        do {
+            number = generateRandomReceiptNumber();
+        } while (receiptRepository.existsByNumberAndUser(number, user));
         return number;
     }
 
@@ -72,5 +128,24 @@ public class ReceiptService {
         }
 
         return result.toString();
+    }
+
+    public Long getReceiptCountByUser(User user) {
+        return (long) receiptRepository.findByUserOrderByDateDesc(user).size();
+    }
+
+    public BigDecimal getDailyRevenueByUser(User user, LocalDate date) {
+        List<Receipt> allReceipts = receiptRepository.findByUserOrderByDateDesc(user);
+        return allReceipts.stream()
+                .filter(receipt -> receipt.getDate() != null && receipt.getDate().equals(date))
+                .map(receipt -> {
+                    // Load items if needed for calculation
+                    if (receipt.getItems() == null || receipt.getItems().isEmpty()) {
+                        receipt = receiptRepository.findByIdAndUserWithItems(receipt.getId(), user)
+                                .orElse(receipt);
+                    }
+                    return receipt.getGrandTotal();
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

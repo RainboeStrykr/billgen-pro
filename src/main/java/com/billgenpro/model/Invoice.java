@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import com.billgenpro.model.InvoiceStatus;
 
 @Entity
 @Table(name = "invoices")
@@ -46,8 +47,12 @@ public class Invoice {
     })
     private BillTo shipTo;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<InvoiceItem> items = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @PositiveOrZero(message = "Tax percentage must be positive")
     private BigDecimal taxPercentage = BigDecimal.ZERO;
@@ -56,6 +61,20 @@ public class Invoice {
     private String notes;
 
     private Integer templateNumber = 1;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private InvoiceStatus status = InvoiceStatus.PENDING;
+
+    // Template customization fields
+    @Column(name = "logo_url", length = 500)
+    private String logoUrl;
+
+    @Column(name = "primary_color", length = 7)
+    private String primaryColor = "#6366f1";
+
+    @Column(name = "secondary_color", length = 7)
+    private String secondaryColor = "#0ea5e9";
 
     // Constructors
     public Invoice() {}
@@ -115,4 +134,30 @@ public class Invoice {
 
     public Integer getTemplateNumber() { return templateNumber; }
     public void setTemplateNumber(Integer templateNumber) { this.templateNumber = templateNumber; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public InvoiceStatus getStatus() { return status; }
+    public void setStatus(InvoiceStatus status) { this.status = status; }
+
+    public String getLogoUrl() { return logoUrl; }
+    public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
+
+    public String getPrimaryColor() { return primaryColor; }
+    public void setPrimaryColor(String primaryColor) { this.primaryColor = primaryColor; }
+
+    public String getSecondaryColor() { return secondaryColor; }
+    public void setSecondaryColor(String secondaryColor) { this.secondaryColor = secondaryColor; }
+
+    // Auto-calculate status based on payment date
+    public InvoiceStatus calculateStatus() {
+        if (paymentDate != null) {
+            return InvoiceStatus.PAID;
+        }
+        if (date != null && date.isBefore(LocalDate.now().minusDays(30))) {
+            return InvoiceStatus.OVERDUE;
+        }
+        return InvoiceStatus.PENDING;
+    }
 }

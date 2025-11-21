@@ -3,12 +3,17 @@ package com.billgenpro.controller;
 import com.billgenpro.model.Receipt;
 import com.billgenpro.model.ReceiptItem;
 import com.billgenpro.model.Company;
+import com.billgenpro.model.User;
 import com.billgenpro.service.ReceiptService;
 import com.billgenpro.service.PdfService;
+import com.billgenpro.service.UserService;
+import com.billgenpro.service.ExcelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,16 +34,30 @@ public class ReceiptController {
     @Autowired
     private PdfService pdfService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ExcelService excelService;
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userService.findByEmail(email);
+    }
+
     @GetMapping
     public String listReceipts(Model model) {
-        model.addAttribute("receipts", receiptService.getAllReceipts());
+        User currentUser = getCurrentUser();
+        model.addAttribute("receipts", receiptService.getAllReceiptsByUser(currentUser));
         return "receipts/list";
     }
 
     @GetMapping("/new")
     public String newReceipt(Model model) {
+        User currentUser = getCurrentUser();
         Receipt receipt = new Receipt();
-        receipt.setNumber(receiptService.generateReceiptNumber());
+        receipt.setNumber(receiptService.generateReceiptNumber(currentUser));
         receipt.setDate(LocalDate.now());
         receipt.setCompany(new Company());
         
@@ -53,16 +72,18 @@ public class ReceiptController {
 
     @GetMapping("/{id}")
     public String viewReceipt(@PathVariable Long id, Model model) {
-        Receipt receipt = receiptService.getReceiptById(id)
-                .orElseThrow(() -> new RuntimeException("Receipt not found"));
+        User currentUser = getCurrentUser();
+        Receipt receipt = receiptService.getReceiptByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new RuntimeException("Receipt not found or you don't have permission to view it"));
         model.addAttribute("receipt", receipt);
         return "receipts/view";
     }
 
     @GetMapping("/{id}/edit")
     public String editReceipt(@PathVariable Long id, Model model) {
-        Receipt receipt = receiptService.getReceiptById(id)
-                .orElseThrow(() -> new RuntimeException("Receipt not found"));
+        User currentUser = getCurrentUser();
+        Receipt receipt = receiptService.getReceiptByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new RuntimeException("Receipt not found or you don't have permission to edit it"));
         model.addAttribute("receipt", receipt);
         return "receipts/form";
     }
@@ -79,20 +100,23 @@ public class ReceiptController {
                 item.getName() == null || item.getName().trim().isEmpty());
         }
 
-        receiptService.saveReceipt(receipt);
+        User currentUser = getCurrentUser();
+        receiptService.saveReceipt(receipt, currentUser);
         return "redirect:/receipts";
     }
 
     @GetMapping("/{id}/delete")
     public String deleteReceipt(@PathVariable Long id) {
-        receiptService.deleteReceipt(id);
+        User currentUser = getCurrentUser();
+        receiptService.deleteReceipt(id, currentUser);
         return "redirect:/receipts";
     }
 
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id) {
-        Receipt receipt = receiptService.getReceiptById(id)
-                .orElseThrow(() -> new RuntimeException("Receipt not found"));
+        User currentUser = getCurrentUser();
+        Receipt receipt = receiptService.getReceiptByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new RuntimeException("Receipt not found or you don't have permission to access it"));
 
         byte[] pdfBytes = pdfService.generateReceiptPdf(receipt);
 
@@ -103,5 +127,24 @@ public class ReceiptController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfBytes);
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportReceipts() {
+        try {
+            User currentUser = getCurrentUser();
+            List<Receipt> receipts = receiptService.getAllReceiptsByUser(currentUser);
+            byte[] excelBytes = excelService.generateReceiptsExcel(receipts);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+            headers.setContentDispositionFormData("attachment", "receipts-export.xlsx");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to export receipts: " + e.getMessage(), e);
+        }
     }
 }

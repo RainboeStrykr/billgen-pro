@@ -54,4 +54,5 @@ application-*.yml
 
 # Temporary files
 *.tmp
-*.temp
+*.tempdata/
+src/main/resources/application.properties

@@ -32,8 +32,12 @@ public class Receipt {
     private String billTo;
     private String cashier;
 
-    @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReceiptItem> items = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @PositiveOrZero(message = "Tax percentage must be positive")
     private BigDecimal taxPercentage = BigDecimal.ZERO;
@@ -103,4 +107,7 @@ public class Receipt {
 
     public Integer getTemplateNumber() { return templateNumber; }
     public void setTemplateNumber(Integer templateNumber) { this.templateNumber = templateNumber; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }
