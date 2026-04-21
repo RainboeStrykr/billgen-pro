@@ -1,10 +1,8 @@
 # 🧾 Billgen Pro - Professional Billing Made Simple
 
-A powerful Java Spring Boot invoice and receipt generator application for professional billing needs.
-
 ## 📱 About
 
-Billgen Pro is a comprehensive server-side billing application built with Spring Boot and Thymeleaf. It provides professional invoice and receipt generation with modern web application architecture and robust data persistence.
+Billgen Pro is a secure billing application built with Spring Boot and Thymeleaf for generating professional invoices and receipts. It features user authentication, data isolation, and BCrypt password protection. Users can easily create, manage, and export invoices or receipts as PDFs, with automatic tax calculations and real-time total updates. The Bootstrap-based responsive UI ensures a smooth and professional billing experience.
 
 ## ⚡️ Key Features
 
@@ -13,7 +11,7 @@ Billgen Pro is a comprehensive server-side billing application built with Spring
   - BCrypt password hashing for secure password storage
   - User-specific data isolation (users can only access their own invoices and receipts)
   - Protected routes requiring authentication
-- **Invoice Generation:** Create and customize professional invoices with company info, items, taxes, and notes
+- **Invoice Generation:** Create and customise professional invoices with company info, items, taxes, and notes
 - **Receipt Generation:** Generate receipts with multiple template options
 - **PDF Export:** Export invoices and receipts as professional PDFs using iText
 - **Data Persistence:** Store invoices and receipts in a database with full CRUD operations
@@ -248,23 +246,7 @@ See [application.properties](./src/main/resources/application.properties) for al
 - `GET /receipts/{id}` - View receipt (only if owned by user)
 - `GET /receipts/{id}/edit` - Edit receipt form (only if owned by user)
 - `GET /receipts/{id}/pdf` - Download receipt PDF (only if owned by user)
-- `GET /receipts/{id}/delete` - Delete receipt (only if owned by user)
-
-## 🎨 Core Features
-
-| Feature | Status |
-|---------|--------|
-| User Authentication & Registration | ✅ |
-| Secure Password Hashing (BCrypt) | ✅ |
-| User Data Isolation | ✅ |
-| Invoice Generation | ✅ |
-| Receipt Generation | ✅ |
-| PDF Export | ✅ |
-| Multiple Templates | ✅ |
-| Database Persistence | ✅ |
-| Real-time Calculations | ✅ |
-| Responsive Design | ✅ |
-| Professional UI | ✅ |
+- `GET /receipts/{id}/delete` - Delete receipt (only if owned by user)|
 
 ## 🤝 Contributing
 
@@ -277,19 +259,6 @@ See [application.properties](./src/main/resources/application.properties) for al
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🔮 Future Enhancements
-
-- [ ] Multiple PDF template designs
-- [ ] Password reset functionality
-- [ ] Email verification for new registrations
-- [ ] REST API for mobile apps
-- [ ] Email integration for sending invoices
-- [ ] Payment tracking and reminders
-- [ ] Advanced reporting and analytics
-- [ ] Import/Export functionality
-- [ ] Custom branding and themes
-- [ ] Role-based access control (Admin/User roles)
 
 ## 🚀 Deployment
 
@@ -309,9 +278,9 @@ For detailed deployment instructions, see:
 
 For issues and questions:
 1. Check the existing issues in the repository
-2. Create a new issue with detailed description
+2. Create a new issue with a detailed description
 3. Include steps to reproduce any bugs
 
 ---
 
-Built with ❤️ using Spring Boot and Java
+*Built with ❤️ by Abhiraj*
